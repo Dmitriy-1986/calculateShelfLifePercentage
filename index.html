@@ -23,8 +23,10 @@
     <div class="container">
         <h2>Калькулятор расчета процента годности</h2>
         <p>
-            Ввода даты производства:
-            <input type="date" id="productionDateInput">
+            <p>
+                Ввода даты производства (Unix timestamp):
+                <input type="text" id="productionDateInput" placeholder="Дата в формате Unix timestamp">
+            </p>
         </p>
         <p>
             Срок годности в днях:
@@ -41,47 +43,45 @@
 
     <script>
         // Функция для расчета процента годности продукта
-        function calculateShelfLifePercentage(productionDate, shelfLifeDays, saleDate) {
-            // Преобразование дат в метку времени Unix (секунды с 1 января 1970 года)
-            const productionTimestamp = Date.parse(productionDate) / 1000;
+        function calculateShelfLifePercentage(productionTimestamp, shelfLifeDays, saleDate) {
+            // Преобразование даты продажи в метку времени Unix (секунды с 1 января 1970 года)
             const saleTimestamp = Date.parse(saleDate) / 1000;
-
+        
             // Рассчитываем срок годности в секундах
             const shelfLifeSeconds = shelfLifeDays * 24 * 60 * 60;
-
+        
             // Рассчитываем оставшийся срок годности продукта
             const remainingShelfLife = productionTimestamp + shelfLifeSeconds - saleTimestamp;
-
+        
             // Рассчитываем процент годности
             const shelfLifePercentage = (remainingShelfLife / shelfLifeSeconds) * 100;
-
+        
             return shelfLifePercentage;
         }
-
+        
         // Функция для обработки нажатия кнопки
         function calculateAndDisplayResult() {
             const productionDateInput = document.getElementById("productionDateInput");
             const shelfLifeDaysInput = document.getElementById("shelfLifeDaysInput");
             const saleDateInput = document.getElementById("saleDateInput");
             const resultElement = document.getElementById("result");
-
-            const productionDate = productionDateInput.value;
+        
+            const productionTimestamp = parseInt(productionDateInput.value);
             const shelfLifeDays = parseInt(shelfLifeDaysInput.value);
             const saleDate = saleDateInput.value;
-
-            if (!productionDate || isNaN(shelfLifeDays) || !saleDate) {
-                resultElement.textContent = "Пожалуйста, заполните все поля";
+        
+            if (isNaN(productionTimestamp) || isNaN(shelfLifeDays) || !saleDate) {
+                resultElement.textContent = "Пожалуйста, заполните все поля корректными данными";
                 return;
             }
-
-            const percentage = calculateShelfLifePercentage(productionDate, shelfLifeDays, saleDate);
+        
+            const percentage = calculateShelfLifePercentage(productionTimestamp, shelfLifeDays, saleDate);
             resultElement.textContent = `Продукт был продан с процентом годности: ${percentage.toFixed(2)}%`;
         }
-
+        
         // Получаем ссылку на кнопку и добавляем обработчик события
         const calculateButton = document.getElementById("calculateButton");
         calculateButton.addEventListener("click", calculateAndDisplayResult);
-
     </script>
 </body>
 
